@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass  # Обязательно для MySQL 8+
+      MYSQL_DATABASE: test
+      MYSQL_USER: a1
+      MYSQL_PASSWORD: "1"  # Пароль для пользователя a1
+      MYSQL_DEFAULT_AUTHENTICATION_PLUGIN: "mysql_native_password"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql  # Дамп базы (опционально)
+    ports:
+      - "3306:3306"
+    networks:
+      - app_network
+
+  backend:
+    #build: ./backend  # Путь к папке с Dockerfile бэкенда
+    image: pupirka/fastapi_app:latest
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  frontend:
+    #build: ./frontend
+    image: pupirka/react_app:latest  # Пример: ghcr.io/pupirka/react-app:1.0.0
+    container_name: react_app
+    ports:
+      - "5173:5173"
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:  # Постоянное хранилище для БД
+
+networks:
+  app_network:
+    driver: bridge
