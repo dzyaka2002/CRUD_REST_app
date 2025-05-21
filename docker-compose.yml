@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db:
+  db: #имя сервиса
     image: mysql:8.0
     container_name: mysql_db
     environment:
@@ -13,24 +13,30 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql  # Дамп базы (опционально)
-    ports:
-      - "3306:3306"
+    #ports:
+    #  - "3306:3306"
     networks:
       - app_network
 
-  backend:
-    #build: ./backend  # Путь к папке с Dockerfile бэкенда
-    image: pupirka/fastapi_app:latest
+  backend: #имя сервиса
+    build: ./backend  # Путь к папке с Dockerfile бэкенда
+    #image: pupirka/fastapi_app:latest
     container_name: fastapi_app
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=test
+      - DB_USER=a1
+      - DB_PASSWORD=1 
     ports:
       - "8000:8000"
     restart: unless-stopped
     networks:
       - app_network
 
-  frontend:
-    #build: ./frontend
-    image: pupirka/react_app:latest  # Пример: ghcr.io/pupirka/react-app:1.0.0
+  frontend: #имя сервиса
+    build: ./frontend
+    #image: pupirka/react_app:latest  # Пример: ghcr.io/pupirka/react-app:1.0.0
     container_name: react_app
     ports:
       - "5173:5173"
