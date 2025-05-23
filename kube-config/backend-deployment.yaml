@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1 # Количество подов
+  selector:
+    matchLabels:
+      app: backend
+      role: webapp
+  template:
+    metadata:
+      labels:
+        app: backend
+        role: webapp
+    spec:
+      containers:
+      - name: backend
+        image: cr.yandex/crpcesfd71k4b3fq9e0u/pupirka/fastapi_app:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_HOST
+          value: "db"  # Сохраняем имя сервиса как в Docker Compose для mySQL
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: "test"
+        - name: DB_USER
+          value: "a1"
+        - name: DB_PASSWORD
+          value: "1"
+        resources:
+          requests: # Гарантированное количество CPU, которое Kubernetes выделит поду
+            cpu: "250m"  # 0.25 CPU ядра (обязательно для HPA), это лимит на под
+          limits: # Максимальное количество CPU, которое может использовать под. При превышении контейнер будет throttled.
+            cpu: "500m"  # Лимит на под
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend  # Имя сервиса должно совпадать с Docker Compose
+spec:
+  selector:
+    app: backend
+    role: webapp
+  ports:
+    - protocol: TCP
+      port: 8000 # Порт, который виден внутри кластера
+      targetPort: 8000 # Порт внутри контейнера
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler # HPA вычисляет % загрузки: (фактическое_использование / requests.cpu) * 100
+metadata: # Если этот процент > averageUtilization (15%), HPA добавляет поды
+  name: backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 1  # Минимальное количество подов
+  maxReplicas: 8  # Максимальное количество
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 15  # 15% нагрузки CPU, Это средняя загрузка CPU по всем подам
