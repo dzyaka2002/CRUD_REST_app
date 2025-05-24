@@ -44,7 +44,7 @@ jobs:
 
   test-frontend:
     name: Test frontend
-    needs: build
+    needs: build-frontend
     runs-on: ubuntu-latest
     defaults:
       run:
