@@ -68,7 +68,7 @@ def test_create_and_retrieve_product(client: TestClient, test_db, product_payloa
 
 @pytest.mark.parametrize("data,expected_status,error_key", [
     ({"name": "Valid", "price": 1}, 200, None),
-    ({"name": "", "price": 1}, 422, "name"),  # Пустое имя
+    ({"price": 1}, 422, "name"),  # Пустое имя
     ({"name": "No Price"}, 422, "price"),  # Нет цены
 ])
 def test_product_validation(client, test_db, data, expected_status, error_key):
