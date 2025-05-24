@@ -5,8 +5,6 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
-env:
-  SONAR_ORG: "dzyaka2002"
 jobs:
   sonarqube:
     name: SonarQube Scan
@@ -39,6 +37,7 @@ jobs:
       - name: Verify coverage file
         run: |
           ls -la
+          cat coverage.xml | head -n 5
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
@@ -47,10 +46,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: >
-            -Dsonar.organization=${{ env.SONAR_ORG }}
+            -Dsonar.organization=dzyaka2002
             -Dsonar.qualitygate.wait=true
-            -Dsonar.projectKey=${{ github.repository }}
-            -Dsonar.projectName=${{ github.repository }}
-            -Dsonar.sources=.
+            -Dsonar.projectKey=dzyaka2002_CRUD_REST_app
+            -Dsonar.projectName=CRUD_REST_app
+            -Dsonar.sources=backend/app
+            -Dsonar.tests=backend/tests
             -Dsonar.exclusions=**/node_modules/**,**/.github/**,**/tests/**,**/venv/**
-            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.python.coverage.reportPaths=backend/coverage.xml
