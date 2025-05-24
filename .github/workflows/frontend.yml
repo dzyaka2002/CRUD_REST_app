@@ -1,4 +1,4 @@
-name: CI
+name: frontend
 
 on:
   push:
@@ -9,13 +9,12 @@ env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   FRONTEND_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/frontend-app
-  BACKEND_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/backend-app
   TAG: ${{ github.sha }}
 
 
 jobs:
-  build:
-    name: Build
+  build-frontend:
+    name: Build frontend
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,8 +42,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-  test:
-    name: Test
+  test-frontend:
+    name: Test frontend
     needs: build
     runs-on: ubuntu-latest
     defaults:
@@ -72,9 +71,9 @@ jobs:
 
       - name: Run tests
         run: npm test -- --watchAll=false --ci
-  deploy:
+  deploy-frontend:
     name: Deploy Frontend to DockerHub
-    needs: [build, test]
+    needs: [build-frontend, test-frontend]
     runs-on: ubuntu-latest
     defaults:
       run:
