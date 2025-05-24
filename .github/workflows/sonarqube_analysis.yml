@@ -5,7 +5,8 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
-
+env:
+  SONAR_ORG: "dzyaka2002"
 jobs:
   sonarqube:
     name: SonarQube Scan
@@ -47,10 +48,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: >
+            -Dsonar.organization=${{ env.SONAR_ORG }}
             -Dsonar.qualitygate.wait=true
             -Dsonar.projectKey=${{ github.repository }}
             -Dsonar.projectName=${{ github.repository }}
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/.github/**,**/tests/**,**/venv/**
             -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.python.xunit.reportPath=test-results.xml
