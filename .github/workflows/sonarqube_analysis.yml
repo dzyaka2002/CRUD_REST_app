@@ -34,7 +34,7 @@ jobs:
           
       - name: Run tests with coverage
         run: |
-          pytest --cov-report xml:coverage.xml  
+          pytest --cov=app --cov-report=xml:coverage.xml tests/
 
       - name: Verify coverage file
         run: |
