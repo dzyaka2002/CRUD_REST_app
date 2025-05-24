@@ -41,8 +41,7 @@ jobs:
           cat coverage.xml | head -n 5
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-quality-gate-action@master
-        #uses: SonarSource/sonarqube-scan-action@master
+        uses: SonarSource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,3 +55,13 @@ jobs:
             -Dsonar.tests=backend/tests
             -Dsonar.exclusions=**/node_modules/**,**/.github/**,**/tests/**,**/venv/**
             -Dsonar.python.coverage.reportPaths=backend/coverage.xml
+     
+      # 2. Этап проверки Quality Gate
+      - name: SonarQube Quality Gate Check
+        uses: SonarSource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          pollingTimeoutSec: 600  # 10 минут ожидания
+          retryIntervalSec: 5     # Интервал проверки
