@@ -66,10 +66,10 @@ def test_create_and_retrieve_product(client: TestClient, test_db, product_payloa
     assert get_resp.status_code == 200
     assert get_resp.json()["name"] == "Test Product"
 
-@pytest.mark.parametrize("data,expected_status", [
-    ({"name": "Valid", "price": 1}, 200),
-    ({"name": "", "price": 1}, 422),  # Пустое имя
-    ({"name": "No Price"}, 422),  # Нет цены
+@pytest.mark.parametrize("data,expected_status,error_key", [
+    ({"name": "Valid", "price": 1}, 200, None),
+    ({"name": "", "price": 1}, 422, "name"),  # Пустое имя
+    ({"name": "No Price"}, 422, "price"),  # Нет цены
 ])
 def test_product_validation(client, test_db, data, expected_status, error_key):
     response = client.post("/api/products", json=data)
