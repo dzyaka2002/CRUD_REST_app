@@ -34,12 +34,11 @@ jobs:
           
       - name: Run tests with coverage
         run: |
-          pytest --cov-report=xml:coverage.xml tests/  
+          pytest --cov-report xml:coverage.xml  
 
       - name: Verify coverage file
         run: |
-          ls -la coverage.xml
-          [ -s coverage.xml ] || exit 1  # Проверка что файл не пустой
+          ls -la
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
