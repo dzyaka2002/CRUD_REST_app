@@ -94,6 +94,7 @@ jobs:
 
 
   update-k8s:
+    needs: deploy-backend
     name: Load new image
     runs-on: ubuntu-latest
     steps:
