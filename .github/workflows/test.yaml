@@ -111,8 +111,5 @@ jobs:
       
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} \
-            $(kubectl get deploy ${{ env.DEPLOYMENT_NAME }} -o jsonpath='{.spec.template.spec.containers[0].name}')=\
-            ${{ env.BACKEND_IMAGE }}:${{ env.TAG }} \
-            -n ${{ env.K8S_NAMESPACE }}
+          kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} $(kubectl get deploy ${{ env.DEPLOYMENT_NAME }} -o jsonpath='{.spec.template.spec.containers[0].name}')=${{ env.BACKEND_IMAGE }}:${{ env.TAG }} -n ${{ env.K8S_NAMESPACE }}
           kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }}
