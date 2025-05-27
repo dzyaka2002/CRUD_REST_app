@@ -24,14 +24,6 @@ jobs:
           ~/yandex-cloud/bin/yc config set cloud-id ${{ secrets.YC_CLOUD_ID }}
           ~/yandex-cloud/bin/yc config set folder-id ${{ secrets.YC_FOLDER_ID }}
           ~/yandex-cloud/bin/yc iam key create --service-account-name k8s --output key.json
-      
-      - name: Generate fresh IAM token
-        id: get-iam-token
-        run: |
-          TOKEN=$(~/yandex-cloud/bin/yc iam create-token)
-          echo "IAM_TOKEN=${TOKEN}" >> $GITHUB_ENV
-          echo "::add-mask::${TOKEN}"  # Маскирует токен в логах
-          ~/yandex-cloud/bin/yc config set token ${{ env.IAM_TOKEN }}
           
       - name: Get kubeconfig
         run: ~/yandex-cloud/bin/yc managed-kubernetes cluster get-credentials --id ${{ secrets.YC_K8S_CLUSTER_ID }} --external
