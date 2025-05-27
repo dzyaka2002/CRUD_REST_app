@@ -21,6 +21,7 @@ jobs:
         run: |
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
           echo "${{ secrets.YC_SA_KEY_JSON }}" > sa-key.json
+          cat sa-key.json
           ~/yandex-cloud/bin/yc config set service-account-key sa-key.json
           
       - name: Generate fresh IAM token
