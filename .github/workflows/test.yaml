@@ -74,6 +74,7 @@ jobs:
 #------------------------------------------  
   sonarqube:
     name: SonarQube Scan
+    needs: [build-backend, test-backend]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -134,7 +135,7 @@ jobs:
 #------------------------------------------
   deploy-backend:
     name: Deploy backend
-    needs: [build-backend, test-backend]
+    needs: [build-backend, test-backend, sonarqube]
     if: success()
     runs-on: ubuntu-latest
     steps:
