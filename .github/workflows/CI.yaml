@@ -185,7 +185,7 @@ jobs:
 #------------------------------------------
   docker:
     name:  Build and Push Docker Images
-    needs: [build]
+    needs: [sonarqube]
     if: success()
     runs-on: ubuntu-latest
     steps:
