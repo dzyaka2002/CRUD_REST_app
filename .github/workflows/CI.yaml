@@ -179,7 +179,6 @@ jobs:
         run: |
           npm test -- --watchAll=false --ci --coverage
           # Конвертируем coverage в формат lcov для SonarQube
-          npx nyc report --reporter=lcov
   
       - name: Verify frontend coverage file
         working-directory: frontend
