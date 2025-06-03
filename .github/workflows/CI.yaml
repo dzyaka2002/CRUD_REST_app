@@ -199,7 +199,7 @@ jobs:
             -Dsonar.projectKey=dzyaka2002_CRUD_REST_app
             -Dsonar.projectName=CRUD_REST_app
             -Dsonar.sources=backend/app,frontend/src
-            -Dsonar.tests=backend/tests,frontend
+            -Dsonar.tests=backend/tests,frontend/src
             -Dsonar.exclusions=**/node_modules/**,**/.github/**,**/tests/**,**/venv/**
             -Dsonar.python.coverage.reportPaths=backend/coverage.xml
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
