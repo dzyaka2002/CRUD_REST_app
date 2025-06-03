@@ -124,10 +124,9 @@ jobs:
     name: SonarQube Scan
     needs: [build, test]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
+
+        # Backend-тесты
       - name: Checkout code
         uses: actions/checkout@v4
         
@@ -137,6 +136,7 @@ jobs:
           python-version: '3.9'  # Явно указана версия Python
           
       - name: Install dependencies
+        working-directory: backend
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -146,15 +146,47 @@ jobs:
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV  # Упрощено
           
       - name: Run tests with coverage
+        working-directory: backend
         run: |
-          #pytest --cov=app --cov-report=xml:coverage.xml tests/
           pytest --cov=app --cov-report=xml:coverage.xml --cov-report=term-missing tests/
 
       - name: Verify coverage file
+        working-directory: backend
         run: |
           ls -la
           cat coverage.xml | head -n 5
 
+        # Frontend-тесты
+      - name: Setup Node.js for frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Cache frontend dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+  
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+  
+      - name: Run frontend tests with coverage
+        working-directory: frontend
+        run: |
+          npm test -- --watchAll=false --ci --coverage
+          # Конвертируем coverage в формат lcov для SonarQube
+          npx nyc report --reporter=lcov
+  
+      - name: Verify frontend coverage file
+        working-directory: frontend
+        run: |
+          ls -la coverage/
+          cat coverage/lcov.info | head -n 5
+
+      # SonarQube анализ
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
@@ -166,12 +198,14 @@ jobs:
             -Dsonar.qualitygate.wait=true
             -Dsonar.projectKey=dzyaka2002_CRUD_REST_app
             -Dsonar.projectName=CRUD_REST_app
-            -Dsonar.sources=backend/app
-            -Dsonar.tests=backend/tests
+            -Dsonar.sources=backend/app,frontend/src
+            -Dsonar.tests=backend/tests,frontend
             -Dsonar.exclusions=**/node_modules/**,**/.github/**,**/tests/**,**/venv/**
             -Dsonar.python.coverage.reportPaths=backend/coverage.xml
+            -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
+            -Dsonar.sourceEncoding=UTF-8
      
-      # 2. Этап проверки Quality Gate
+      # Этап проверки Quality Gate
       - name: SonarQube Quality Gate Check
         uses: SonarSource/sonarqube-quality-gate-action@master
         env:
