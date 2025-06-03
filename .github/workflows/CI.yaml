@@ -143,6 +143,7 @@ jobs:
           pip install pytest pytest-cov  # Добавлен pytest-cov
 
       - name: Set PYTHONPATH
+        working-directory: backend
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV  # Упрощено
           
       - name: Run tests with coverage
