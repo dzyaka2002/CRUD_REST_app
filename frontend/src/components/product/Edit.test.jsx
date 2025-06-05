@@ -78,7 +78,7 @@ describe('ProductEdit Component', () => {
       fireEvent.change(screen.getByLabelText('Name'), { 
         target: { value: 'Updated Product' } 
       });
-      fireEvent.click(screen.getByText('Submit'));
+      fireEvent.click(screen.getByText('Save')); // Изменили с 'Submit' на 'Save'
     });
 
     await waitFor(() => {
@@ -106,7 +106,7 @@ describe('ProductEdit Component', () => {
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByText('Submit'));
+      fireEvent.click(screen.getByText('Save')); // Изменили с 'Submit' на 'Save'
     });
 
     await waitFor(() => {
