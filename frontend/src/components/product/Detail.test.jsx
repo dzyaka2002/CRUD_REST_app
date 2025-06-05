@@ -32,12 +32,12 @@ describe('ProductDetail Component', () => {
       );
     });
 
-    expect(screen.getByDisplayValue(mockProduct.id)).toBeInTheDocument();
+    expect(await screen.findByDisplayValue(mockProduct.id)).toBeInTheDocument();
     expect(screen.getByDisplayValue(mockProduct.name)).toBeInTheDocument();
     expect(screen.getByDisplayValue(mockProduct.price)).toBeInTheDocument();
   });
 
-  test('2. Отображает кнопки Back и Edit', async () => {
+  test('2. Отображает правильные кнопки действий', async () => {
     http.get.mockResolvedValue({ data: mockProduct });
 
     await act(async () => {
@@ -48,10 +48,22 @@ describe('ProductDetail Component', () => {
       );
     });
 
-    // Ищем кнопки по точному тексту
-    const backButton = screen.getByText('Back');
-    const editButton = screen.getByText('Edit');
+    // Находим все ссылки внутри формы
+    const links = screen.getAllByRole('link');
+    
+    // Фильтруем нужные кнопки по классам и тексту
+    const backButton = links.find(link => 
+      link.classList.contains('btn-secondary') && 
+      link.textContent.toLowerCase().includes('back')
+    );
+    
+    const editButton = links.find(link => 
+      link.classList.contains('btn-primary') && 
+      link.textContent.toLowerCase().includes('edit')
+    );
 
+    expect(backButton).toBeInTheDocument();
+    expect(editButton).toBeInTheDocument();
     expect(backButton).toHaveAttribute('href', '/product');
     expect(editButton).toHaveAttribute('href', `/product/edit/${mockProduct.id}`);
   });
