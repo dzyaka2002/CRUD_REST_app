@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Service from './Service'
+
 export default function ProductCreate(props) {
   
   const [ product, setProduct ] = useState({})
+
   function create(e) {
-Uncovered code
     e.preventDefault()
     Service.create(product).then(() => {
       props.history.push('/product')
@@ -13,11 +14,13 @@ Uncovered code
       alert(e.response.data)
     })
   }
+
   function onChange(e) {
     let data = { ...product }
     data[e.target.name] = e.target.value
     setProduct(data)
   }
+
   return (
     <div className="container">
       <div className="row">
