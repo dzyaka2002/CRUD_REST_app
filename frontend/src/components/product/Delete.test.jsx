@@ -1,10 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import ProductDelete from './Delete';
-import * as Service from './Service';
+import http from '../../http';
 
-jest.mock('./Service', () => ({
+// Мокаем весь http модуль
+jest.mock('../../http', () => ({
+  get: jest.fn(),
   delete: jest.fn()
 }));
 
@@ -22,66 +24,78 @@ describe('ProductDelete Component', () => {
     jest.clearAllMocks();
   });
 
-  test('1. Отображает данные продукта', async () => {
-    Service.delete.mockResolvedValue({ data: mockProduct });
+  test('1. Загружает и отображает данные продукта', async () => {
+    http.get.mockResolvedValue({ data: mockProduct });
 
-    render(
-      <MemoryRouter>
-        <ProductDelete match={mockMatch} />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProductDelete match={mockMatch} />
+        </MemoryRouter>
+      );
+    });
 
-    expect(await screen.findByDisplayValue(mockProduct.id)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(mockProduct.id)).toBeInTheDocument();
     expect(screen.getByDisplayValue(mockProduct.name)).toBeInTheDocument();
     expect(screen.getByDisplayValue(mockProduct.price)).toBeInTheDocument();
   });
 
-  test('2. Успешное удаление продукта', async () => {
-    Service.delete
-      .mockResolvedValueOnce({ data: mockProduct }) // Первый вызов - загрузка данных
-      .mockResolvedValueOnce({}); // Второй вызов - удаление
+  test('2. Успешно удаляет продукт', async () => {
+    http.get.mockResolvedValue({ data: mockProduct });
+    http.delete.mockResolvedValue({});
 
-    render(
-      <MemoryRouter>
-        <ProductDelete match={mockMatch} history={mockHistory} />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProductDelete match={mockMatch} history={mockHistory} />
+        </MemoryRouter>
+      );
+    });
 
-    fireEvent.click(screen.getByText('Delete'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Delete'));
+    });
 
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(Service.delete).toHaveBeenCalledWith('1', mockProduct);
-    expect(mockHistory.push).toHaveBeenCalledWith('/product');
+    await waitFor(() => {
+      expect(http.delete).toHaveBeenCalledWith(`/products/${mockProduct.id}`);
+      expect(mockHistory.push).toHaveBeenCalledWith('/product');
+    });
   });
 
-  test('3. Обработка ошибки при удалении', async () => {
+  test('3. Обрабатывает ошибку при удалении', async () => {
     const errorMessage = 'Delete failed';
-    Service.delete
-      .mockResolvedValueOnce({ data: mockProduct })
-      .mockRejectedValueOnce({ response: { data: errorMessage } });
+    http.get.mockResolvedValue({ data: mockProduct });
+    http.delete.mockRejectedValue({ response: { data: errorMessage } });
 
     window.alert = jest.fn();
 
-    render(
-      <MemoryRouter>
-        <ProductDelete match={mockMatch} />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProductDelete match={mockMatch} />
+        </MemoryRouter>
+      );
+    });
 
-    fireEvent.click(screen.getByText('Delete'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Delete'));
+    });
 
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(window.alert).toHaveBeenCalledWith(errorMessage);
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith(errorMessage);
+    });
   });
 
-  test('4. Кнопка Cancel ведет на страницу /product', () => {
-    Service.delete.mockResolvedValue({ data: mockProduct });
+  test('4. Кнопка Cancel ведет на /product', async () => {
+    http.get.mockResolvedValue({ data: mockProduct });
 
-    render(
-      <MemoryRouter>
-        <ProductDelete match={mockMatch} />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProductDelete match={mockMatch} />
+        </MemoryRouter>
+      );
+    });
 
     const cancelLink = screen.getByRole('link', { name: /cancel/i });
     expect(cancelLink).toHaveAttribute('href', '/product');
