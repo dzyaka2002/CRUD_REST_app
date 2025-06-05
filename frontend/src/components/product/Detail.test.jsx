@@ -48,24 +48,31 @@ describe('ProductDetail Component', () => {
       );
     });
 
-    // Находим все ссылки внутри формы
-    const links = screen.getAllByRole('link');
+    // Находим все кнопки (ссылки) внутри формы
+    const buttons = screen.getAllByRole('link');
     
-    // Фильтруем нужные кнопки по классам и тексту
-    const backButton = links.find(link => 
-      link.classList.contains('btn-secondary') && 
-      link.textContent.toLowerCase().includes('back')
+    // Проверяем, что есть хотя бы две кнопки (Back и Edit)
+    expect(buttons.length).toBeGreaterThanOrEqual(2);
+    
+    // Ищем кнопки по тексту (без учета регистра)
+    const backButton = buttons.find(button => 
+      button.textContent.match(/back/i)
     );
-    
-    const editButton = links.find(link => 
-      link.classList.contains('btn-primary') && 
-      link.textContent.toLowerCase().includes('edit')
+    const editButton = buttons.find(button => 
+      button.textContent.match(/edit/i)
     );
 
-    expect(backButton).toBeInTheDocument();
-    expect(editButton).toBeInTheDocument();
+    // Проверяем что кнопки найдены
+    expect(backButton).toBeDefined();
+    expect(editButton).toBeDefined();
+    
+    // Проверяем атрибуты
     expect(backButton).toHaveAttribute('href', '/product');
     expect(editButton).toHaveAttribute('href', `/product/edit/${mockProduct.id}`);
+    
+    // Проверяем классы (опционально)
+    expect(backButton).toHaveClass('btn-secondary');
+    expect(editButton).toHaveClass('btn-primary');
   });
 
   test('3. Обрабатывает ошибку при загрузке', async () => {
