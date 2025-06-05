@@ -4,7 +4,6 @@ import { MemoryRouter } from 'react-router-dom';
 import ProductDetail from './Detail';
 import http from '../../http';
 
-// Мокаем http модуль
 jest.mock('../../http', () => ({
   get: jest.fn()
 }));
@@ -49,8 +48,9 @@ describe('ProductDetail Component', () => {
       );
     });
 
-    const backButton = screen.getByRole('link', { name: /back/i });
-    const editButton = screen.getByRole('link', { name: /edit/i });
+    // Ищем кнопки по точному тексту
+    const backButton = screen.getByText('Back');
+    const editButton = screen.getByText('Edit');
 
     expect(backButton).toHaveAttribute('href', '/product');
     expect(editButton).toHaveAttribute('href', `/product/edit/${mockProduct.id}`);
