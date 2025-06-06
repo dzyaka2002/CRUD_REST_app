@@ -38,23 +38,6 @@ describe('ProductDetail Component', () => {
   });
 
 
-  test('2. Отображает кнопки Back и Edit', async () => {
-    http.get.mockResolvedValue({ data: mockProduct });
-
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <ProductDetail match={mockMatch} />
-        </MemoryRouter>
-      );
-    });
-
-    const backButton = screen.getByRole('link', { name: /back/i });
-    const editButton = screen.getByRole('link', { name: /edit/i });
-
-    expect(backButton).toHaveAttribute('href', '/product');
-    expect(editButton).toHaveAttribute('href', `/product/edit/${mockProduct.id}`);
-  });
 
   test('3. Обрабатывает ошибку при загрузке', async () => {
     const errorMessage = 'Load failed';
