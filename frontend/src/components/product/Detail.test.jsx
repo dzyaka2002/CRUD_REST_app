@@ -48,29 +48,15 @@ describe('ProductDetail Component', () => {
       );
     });
 
-    // Находим все кнопки (ссылки) внутри формы
-    const buttons = screen.getAllByRole('link');
-    
-    // Проверяем, что есть хотя бы две кнопки (Back и Edit)
-    expect(buttons.length).toBeGreaterThanOrEqual(2);
-    
-    // Ищем кнопки по тексту (без учета регистра)
-    const backButton = buttons.find(button => 
-      button.textContent.match(/back/i)
-    );
-    const editButton = buttons.find(button => 
-      button.textContent.match(/edit/i)
-    );
-
-    // Проверяем что кнопки найдены
-    expect(backButton).toBeDefined();
-    expect(editButton).toBeDefined();
+    // Проверяем наличие кнопок
+    const backButton = screen.getByRole('link', { name: /back/i });
+    const editButton = screen.getByRole('link', { name: /edit/i });
     
     // Проверяем атрибуты
     expect(backButton).toHaveAttribute('href', '/product');
     expect(editButton).toHaveAttribute('href', `/product/edit/${mockProduct.id}`);
     
-    // Проверяем классы (опционально)
+    // Проверяем классы
     expect(backButton).toHaveClass('btn-secondary');
     expect(editButton).toHaveClass('btn-primary');
   });
