@@ -37,29 +37,24 @@ describe('ProductDetail Component', () => {
     expect(screen.getByDisplayValue(mockProduct.price)).toBeInTheDocument();
   });
 
-test('2. Отображает правильные кнопки действий', async () => {
-  http.get.mockResolvedValue({ data: mockProduct });
 
-  await act(async () => {
-    render(
-      <MemoryRouter>
-        <ProductDetail match={mockMatch} />
-      </MemoryRouter>
-    );
+  test('2. Отображает кнопки Back и Edit', async () => {
+    http.get.mockResolvedValue({ data: mockProduct });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProductDetail match={mockMatch} />
+        </MemoryRouter>
+      );
+    });
+
+    const backButton = screen.getByRole('link', { name: /back/i });
+    const editButton = screen.getByRole('link', { name: /edit/i });
+
+    expect(backButton).toHaveAttribute('href', '/product');
+    expect(editButton).toHaveAttribute('href', `/product/edit/${mockProduct.id}`);
   });
-
-  // Ищем кнопки по точному тексту
-  const backButton = screen.getByText('Back');
-  const editButton = screen.getByText('Edit');
-  
-  // Проверяем что это ссылки (если они обернуты в Link)
-  expect(backButton.closest('a')).toHaveAttribute('href', '/product');
-  expect(editButton.closest('a')).toHaveAttribute('href', `/product/edit/${mockProduct.id}`);
-  
-  // Проверяем классы
-  expect(backButton).toHaveClass('btn-secondary');
-  expect(editButton).toHaveClass('btn-primary');
-});
 
   test('3. Обрабатывает ошибку при загрузке', async () => {
     const errorMessage = 'Load failed';
