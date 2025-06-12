@@ -201,7 +201,7 @@ jobs:
             -Dsonar.sources=.
             -Dsonar.tests=backend/tests,frontend/src/components/product
             -Dsonar.test.inclusions=frontend/src/components/product/*.test.jsx
-            -Dsonar.exclusions=**/node_modules/**,**/.github/**,**/tests/**,**/venv/**,**/components/product/*.test.jsx,**/frontend/coverage/**
+            -Dsonar.exclusions=**/node_modules/**,**/.github/**,**/tests/**,**/venv/**,**/components/product/*.test.jsx,**/frontend/coverage/**,**Dockerfile**
             -Dsonar.python.coverage.reportPaths=backend/coverage.xml
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
             -Dsonar.sourceEncoding=UTF-8
