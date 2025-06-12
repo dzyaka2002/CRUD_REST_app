@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: cr.yandex/crpcesfd71k4b3fq9e0u/pupirka/fastapi_app:latest
+        image: pupirka/backend-app:latest
         ports:
         - containerPort: 8000
         env:
