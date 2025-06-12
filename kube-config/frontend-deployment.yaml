@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: cr.yandex/crpcesfd71k4b3fq9e0u/pupirka/react_app:latest  # Ваш образ из YCR
+        image: pupirka/frontend-app:latest
         ports:
         - containerPort: 5173
 
